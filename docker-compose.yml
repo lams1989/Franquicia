@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: franquicia_user
+      MONGO_INITDB_ROOT_PASSWORD: franquicia123
+      MONGO_INITDB_DATABASE: franquicia_db
+    volumes:
+      - mongo_data:/data/db
+
+  franquicia-api:
+    build: .
+    container_name: franquicia-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://franquicia_user:franquicia123@mongo:27017/franquicia_db?authSource=admin
+    depends_on:
+      - mongo
+
+volumes:
+  mongo_data:

@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: franquicia-api
+  data:
+    mongodb:
+      uri: mongodb://franquicia_user:franquicia123@localhost:27017/franquicia_db?authSource=franquicia_db
+server:
+  port: 8080
+logging:
+  level:
+    org.springframework.data.mongodb: DEBUG
