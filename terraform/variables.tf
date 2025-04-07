@@ -1,34 +1,39 @@
 variable "aws_region" {
-  description = "AWS region"
+  description = "Región de AWS"
   default     = "us-east-1"
 }
 
-variable "ecs_cluster_name" {
-  description = "Name of the ECS cluster"
-  default     = "franquicia-cluster"
+variable "key_name" {
+  description = "Nombre de la clave SSH"
+  default     = "franquicia-key"
 }
 
-variable "s3_bucket_name" {
-  description = "S3 bucket for logs"
-  default     = "franquicia-logs-bucket"
+variable "mongo_port" {
+  description = "Puerto de MongoDB"
+  default     = 27017
 }
 
-variable "docdb_cluster_id" {
-  description = "Amazon DocumentDB cluster ID"
-  default     = "franquicia-docdb"
+variable "ami_id" {
+  description = "AMI de Amazon Linux 2"
+  default     = "ami-0c55b159cbfafe1f0"
 }
 
-variable "docdb_instance_class" {
-  description = "DocumentDB instance class"
-  default     = "db.r5.large"
+variable "instance_type" {
+  description = "Tipo de instancia de EC2"
+  default     = "t2.micro"
 }
 
-variable "docdb_admin_user" {
-  description = "DocumentDB admin username"
-  default     = "admin"
+variable "mongo_user" {
+  description = "Usuario de MongoDB"
+  default     = "franquicia_user"
 }
 
-variable "docdb_admin_password" {
-  description = "DocumentDB admin password"
-  default     = "SuperSecurePassword123!"
+variable "mongo_password" {
+  description = "Contraseña de MongoDB"
+  default     = "franquicia123"
+}
+
+variable "mongo_db" {
+  description = "Nombre de la base de datos"
+  default     = "franquicia_db"
 }

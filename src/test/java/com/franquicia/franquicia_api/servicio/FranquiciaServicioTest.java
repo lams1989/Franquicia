@@ -102,4 +102,44 @@ class FranquiciaServicioTest {
 
 		StepVerifier.create(result).expectNextMatches(p -> p.getNombre().equals("Producto B")).verifyComplete();
 	}
+
+	@Test
+	void testActualizarNombreProducto() {
+		String nuevoNombre = "Producto Actualizado";
+
+		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
+		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
+
+		Mono<Franquicia> result = servicio.actualizarNombreProducto("franq1", "suc1", "prod1", nuevoNombre);
+
+		StepVerifier.create(result)
+				.expectNextMatches(f -> f.getSucursales().stream().flatMap(s -> s.getProductos().stream())
+						.anyMatch(p -> p.getId().equals("prod1") && p.getNombre().equals(nuevoNombre)))
+				.verifyComplete();
+	}
+
+	@Test
+	void testActualizarNombreSucursal() {
+		String nuevoNombre = "Sucursal Actualizada";
+
+		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
+		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
+
+		Mono<Franquicia> result = servicio.actualizarNombreSucursal("franq1", "suc1", nuevoNombre);
+
+		StepVerifier.create(result).expectNextMatches(f -> f.getSucursales().stream()
+				.anyMatch(s -> s.getId().equals("suc1") && s.getNombre().equals(nuevoNombre))).verifyComplete();
+	}
+
+	@Test
+	void testActualizarNombreFranquicia() {
+		String nuevoNombre = "Franquicia Actualizada";
+
+		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
+		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
+
+		Mono<Franquicia> result = servicio.actualizarNombreFranquicia("franq1", nuevoNombre);
+
+		StepVerifier.create(result).expectNextMatches(f -> f.getNombre().equals(nuevoNombre)).verifyComplete();
+	}
 }

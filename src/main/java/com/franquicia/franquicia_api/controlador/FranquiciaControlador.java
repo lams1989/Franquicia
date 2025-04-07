@@ -71,4 +71,21 @@ public class FranquiciaControlador {
 	public Mono<Producto> obtenerProductoConMayorStock(@PathVariable String id) {
 		return servicio.obtenerProductoConMayorStock(id);
 	}
+
+	@PatchMapping("/{id}/nombre")
+	public Mono<Franquicia> actualizarNombreFranquicia(@PathVariable String id, @RequestBody String nuevoNombre) {
+		return servicio.actualizarNombreFranquicia(id, nuevoNombre);
+	}
+
+	@PatchMapping("/{id}/sucursales/{sucursalId}/nombre")
+	public Mono<Franquicia> actualizarNombreSucursal(@PathVariable String id, @PathVariable String sucursalId,
+			@RequestBody String nuevoNombre) {
+		return servicio.actualizarNombreSucursal(id, sucursalId, nuevoNombre);
+	}
+
+	@PatchMapping("/{id}/sucursales/{sucursalId}/productos/{productoId}/nombre")
+	public Mono<Franquicia> actualizarNombreProducto(@PathVariable String id, @PathVariable String sucursalId,
+			@PathVariable String productoId, @RequestBody String nuevoNombre) {
+		return servicio.actualizarNombreProducto(id, sucursalId, productoId, nuevoNombre);
+	}
 }

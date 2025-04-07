@@ -1,2 +1,8 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+* text=auto
+*.sh eol=lf
+*.tf eol=lf
+*.yml eol=lf
+*.md eol=lf
+*.pub eol=lf
