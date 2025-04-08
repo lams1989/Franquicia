@@ -25,6 +25,16 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    ```bash
    docker-compose build
    ```
+   
+  Si deseas implementar el contenedor en local se debe realizar la carga de la imagen manualmente y ver los pods.
+  NOTA: Al ser una base de datos en la nube en un cluster, es necesario configurar localmente una base de datos para poder hacer el uso de ella. 
+  ```bash   
+        docker build -t franquicia-api:latest .
+        docker run -d -p 8080:8080 --name franquicia-api franquicia-api:latest
+        docker logs -f franquicia-api  
+   ```
+        
+
 
 ## Ejecución
 1. Levantar el entorno con Docker Compose:
