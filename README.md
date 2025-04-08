@@ -21,6 +21,9 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    ```bash
    mvn clean package -DskipTests
    ```
+    NOTA: En este instante se puede levantar solo el aplicativo y realizar las peticiones descritas más abajo por medio de consola o crea las peticiones desde alguna herramienta para pruebas. El proyecto maneja una información inicial al cargarse.    
+
+
 3. Construir el contenedor:
    ```bash
    docker-compose build
