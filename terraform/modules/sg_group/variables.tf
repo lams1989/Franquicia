@@ -5,6 +5,6 @@ variable "project_name" {
 }
 
 variable "vpc_id" {
-  type        = number
-  description = "Id vpc"
+  type        = string
+  description = "ID de la VPC"
 }

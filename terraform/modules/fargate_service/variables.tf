@@ -76,6 +76,6 @@ variable "task_role_arn" {
 }
 
 variable "public_sg_id" {
-  type        = number
+  type        = string
   description = "Id grupo de seguridad publico"
 }

@@ -1,5 +1,3 @@
-
-# COLOQUE ULTIMA EJECUCION
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "ecsTaskExecutionRole"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_execution_assume_role.json
@@ -34,7 +32,6 @@ resource "aws_iam_role" "ecs_task_role" {
 resource "aws_iam_role_policy_attachment" "ecs_task_role_extra" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-  # o cualquier otra política custom
 }
 
 output "ecs_task_execution_role_arn" {

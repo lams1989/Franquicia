@@ -12,7 +12,6 @@ resource "aws_internet_gateway" "this" {
   }
 }
 
-# Crearemos subnets públicas en distintas AZ
 resource "aws_subnet" "public_subnets" {
   count                   = length(var.azs)
   vpc_id                  = aws_vpc.this.id

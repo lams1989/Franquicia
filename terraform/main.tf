@@ -6,7 +6,7 @@ module "iam_roles" {
 }
 
 #################################
-# 1. Módulo VPC
+# 2. Módulo VPC
 #################################
 module "vpc" {
   source         = "./modules/vpc"
@@ -16,7 +16,7 @@ module "vpc" {
 }
 
 #################################
-# 2. Módulo ALB
+# 3. Módulo ALB
 #################################
 module "alb" {
   source         = "./modules/alb"
@@ -26,7 +26,7 @@ module "alb" {
 }
 
 #################################
-# 3. Módulo ECR
+# 4. Módulo ECR
 #################################
 module "ecr" {
   source    = "./modules/ecr"
@@ -34,7 +34,7 @@ module "ecr" {
 }
 
 #################################
-# 4. Módulo ECS
+# 5. Módulo ECS
 #################################
 module "ecs" {
   source           = "./modules/ecs"
@@ -48,12 +48,11 @@ module "sg_group" {
   source        = "./modules/sg_group"
   vpc_id        = module.vpc.vpc_id
   project_name  = var.project_name
-  # Este módulo crea un SG llamado "public_sg" o como prefieras
 }
 
 #################################
 # 6. Módulo FARGATE_SERVICE
-#################################
+##################################
 module "fargate_service" {
   source           = "./modules/fargate_service"
   service_name     = "${var.project_name}-service"
@@ -64,7 +63,6 @@ module "fargate_service" {
   alb_arn          = module.alb.alb_arn
   alb_sg_id        = module.alb.alb_sg_id
 
-  # Pasa los roles creados
   execution_role_arn = module.iam_roles.ecs_task_execution_role_arn
   task_role_arn      = module.iam_roles.ecs_task_role_arn
 
@@ -72,7 +70,6 @@ module "fargate_service" {
   listener_port    = 80
   desired_count    = 1
 
-  # El SG que usará Fargate
   public_sg_id     = module.sg_group.public_sg_id
 
 }
@@ -86,7 +83,6 @@ module "documentdb" {
   vpc_id            = module.vpc.vpc_id
   public_subnets    = module.vpc.public_subnets
 
-  # En lugar de ecs_tasks_sg_id, usaremos public_sg_id
   public_sg_id      = module.sg_group.public_sg_id
 
   master_username   = "adminuser"

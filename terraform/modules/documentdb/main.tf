@@ -37,6 +37,7 @@ resource "aws_docdb_cluster" "this" {
   vpc_security_group_ids  = [var.public_sg_id]
   deletion_protection     = false
   apply_immediately       = true
+  skip_final_snapshot     = true
 
   # Ajusta retención si deseas backups
   backup_retention_period = 1
