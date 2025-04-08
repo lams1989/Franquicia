@@ -1,7 +1,6 @@
 package com.franquicia.franquicia_api.servicio;
 
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -12,16 +11,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
+import com.franquicia.franquicia_api.FranquiciaApiApplication;
 import com.franquicia.franquicia_api.modelo.Franquicia;
 import com.franquicia.franquicia_api.modelo.Producto;
 import com.franquicia.franquicia_api.modelo.Sucursal;
 import com.franquicia.franquicia_api.repositorio.FranquiciaRepositorio;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = FranquiciaApiApplication.class)
+@ActiveProfiles("test")
 class FranquiciaServicioTest {
 
 	@MockBean
@@ -34,30 +37,38 @@ class FranquiciaServicioTest {
 
 	@BeforeEach
 	public void setup() {
-		Producto producto = new Producto();
-		producto.setId("prod1");
-		producto.setNombre("Producto A");
-		producto.setStock(50);
+		Producto producto = new Producto("prod1", "Producto A", 50);
+		Sucursal sucursal = new Sucursal("suc1", "Sucursal A", new ArrayList<>(List.of(producto)));
 
-		Sucursal sucursal = new Sucursal();
-		sucursal.setId("suc1");
-		sucursal.setNombre("Sucursal A");
-		sucursal.setProductos(new ArrayList<>(List.of(producto)));
+		franquicia = new Franquicia("franq1", "Franquicia 1", new ArrayList<>(List.of(sucursal)));
 
-		franquicia = new Franquicia();
-		franquicia.setId("franq1");
-		franquicia.setNombre("Franquicia 1");
-		franquicia.setSucursales(new ArrayList<>(List.of(sucursal)));
-
-		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
+		when(repositorio.findById("franq1")).thenReturn(Mono.just(franquicia));
 		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
+		when(repositorio.findAll()).thenReturn(Flux.just(franquicia));
+	}
+
+	@Test
+	void testObtenerTodasLasFranquicias() {
+		Flux<Franquicia> result = servicio.obtenerTodasLasFranquicias();
+
+		StepVerifier.create(result).expectNextMatches(f -> f.getId().equals("franq1")).verifyComplete();
 	}
 
 	@Test
 	void testCrearFranquicia() {
-		Mono<Franquicia> result = servicio.crearFranquicia(franquicia);
+		Franquicia nuevaFranquicia = new Franquicia("franq2", "Franquicia 2", new ArrayList<>());
+		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(nuevaFranquicia));
 
-		StepVerifier.create(result).expectNextMatches(f -> f.getNombre().equals("Franquicia 1")).verifyComplete();
+		Mono<Franquicia> result = servicio.crearFranquicia(nuevaFranquicia);
+
+		StepVerifier.create(result).expectNextMatches(f -> f.getNombre().equals("Franquicia 2")).verifyComplete();
+	}
+
+	@Test
+	void testCrearFranquiciaConNulo() {
+		Mono<Franquicia> result = servicio.crearFranquicia(null);
+
+		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
 	}
 
 	@Test
@@ -68,14 +79,28 @@ class FranquiciaServicioTest {
 	}
 
 	@Test
+	void testObtenerFranquiciaPorIdNoExistente() {
+		when(repositorio.findById("franq99")).thenReturn(Mono.empty());
+
+		Mono<Franquicia> result = servicio.obtenerFranquiciaPorId("franq99");
+
+		StepVerifier.create(result).expectError(RuntimeException.class).verify();
+	}
+
+	@Test
 	void testAgregarSucursal() {
-		Sucursal nuevaSucursal = new Sucursal();
-		nuevaSucursal.setId("suc2");
-		nuevaSucursal.setNombre("Sucursal B");
+		Sucursal nuevaSucursal = new Sucursal("suc2", "Sucursal B", null);
 
 		Mono<Franquicia> result = servicio.agregarSucursal("franq1", nuevaSucursal);
 
 		StepVerifier.create(result).expectNextMatches(f -> f.getSucursales().size() == 2).verifyComplete();
+	}
+
+	@Test
+	void testAgregarSucursalNula() {
+		Mono<Franquicia> result = servicio.agregarSucursal("franq1", null);
+
+		StepVerifier.create(result).expectError(IllegalArgumentException.class).verify();
 	}
 
 	@Test
@@ -96,50 +121,43 @@ class FranquiciaServicioTest {
 
 		franquicia.getSucursales().get(0).getProductos().add(otroProducto);
 
-		when(repositorio.findById("franq1")).thenReturn(Mono.just(franquicia));
-
 		Mono<Producto> result = servicio.obtenerProductoConMayorStock("franq1");
 
 		StepVerifier.create(result).expectNextMatches(p -> p.getNombre().equals("Producto B")).verifyComplete();
 	}
 
 	@Test
-	void testActualizarNombreProducto() {
-		String nuevoNombre = "Producto Actualizado";
+	void testActualizarNombreFranquicia() {
+		Mono<Franquicia> result = servicio.actualizarNombreFranquicia("franq1", "Franquicia Actualizada");
 
-		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
-		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
-
-		Mono<Franquicia> result = servicio.actualizarNombreProducto("franq1", "suc1", "prod1", nuevoNombre);
-
-		StepVerifier.create(result)
-				.expectNextMatches(f -> f.getSucursales().stream().flatMap(s -> s.getProductos().stream())
-						.anyMatch(p -> p.getId().equals("prod1") && p.getNombre().equals(nuevoNombre)))
+		StepVerifier.create(result).expectNextMatches(f -> f.getNombre().equals("Franquicia Actualizada"))
 				.verifyComplete();
 	}
 
 	@Test
 	void testActualizarNombreSucursal() {
-		String nuevoNombre = "Sucursal Actualizada";
+		Mono<Franquicia> result = servicio.actualizarNombreSucursal("franq1", "suc1", "Sucursal Actualizada");
 
-		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
-		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
-
-		Mono<Franquicia> result = servicio.actualizarNombreSucursal("franq1", "suc1", nuevoNombre);
-
-		StepVerifier.create(result).expectNextMatches(f -> f.getSucursales().stream()
-				.anyMatch(s -> s.getId().equals("suc1") && s.getNombre().equals(nuevoNombre))).verifyComplete();
+		StepVerifier.create(result)
+				.expectNextMatches(f -> f.getSucursales().get(0).getNombre().equals("Sucursal Actualizada"))
+				.verifyComplete();
 	}
 
 	@Test
-	void testActualizarNombreFranquicia() {
-		String nuevoNombre = "Franquicia Actualizada";
+	void testActualizarNombreProducto() {
+		Mono<Franquicia> result = servicio.actualizarNombreProducto("franq1", "suc1", "prod1", "Producto Actualizado");
 
-		when(repositorio.findById(eq("franq1"))).thenReturn(Mono.just(franquicia));
-		when(repositorio.save(any(Franquicia.class))).thenReturn(Mono.just(franquicia));
+		StepVerifier.create(result)
+				.expectNextMatches(
+						f -> f.getSucursales().get(0).getProductos().get(0).getNombre().equals("Producto Actualizado"))
+				.verifyComplete();
+	}
 
-		Mono<Franquicia> result = servicio.actualizarNombreFranquicia("franq1", nuevoNombre);
+	@Test
+	void testEliminarProductoDeSucursal() {
+		Mono<Franquicia> result = servicio.eliminarProductoDeSucursal("franq1", "suc1", "prod1");
 
-		StepVerifier.create(result).expectNextMatches(f -> f.getNombre().equals(nuevoNombre)).verifyComplete();
+		StepVerifier.create(result).expectNextMatches(f -> f.getSucursales().get(0).getProductos().isEmpty())
+				.verifyComplete();
 	}
 }

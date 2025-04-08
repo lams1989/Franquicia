@@ -3,9 +3,10 @@ spring:
     name: franquicia-api
   data:
     mongodb:
-      uri: mongodb://franquicia_user:franquicia123@localhost:27017/franquicia_db?authSource=franquicia_db
+      uri: mongodb+srv://${MONGO_USER}:${MONGO_PASS}@${MONGO_HOST}/${MONGO_DB}?retryWrites=true&w=majority
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
+
 logging:
   level:
     org.springframework.data.mongodb: DEBUG

@@ -1,0 +1,10 @@
+spring:
+  profiles: test
+  data:
+    mongodb:
+      uri: mongodb+srv://luisalejandromunozsierra:21DBbnpNyvQfPMSY@cluster0.qmlyk1u.mongodb.net/franquicia_db?retryWrites=true&w=majority
+  main:
+    web-application-type: reactive
+logging:
+  level:
+    org.springframework: ERROR
