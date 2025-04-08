@@ -1,0 +1,13 @@
+[
+  {
+    "name": "${container_name}",
+    "image": "${image_url}",
+    "portMappings": [
+      {
+        "containerPort": ${container_port},
+      "hostPort": ${container_port}
+    }
+    ],
+    "essential": true
+  }
+]
