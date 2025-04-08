@@ -1,4 +1,11 @@
 #################################
+# 1. iam_roles
+#################################
+module "iam_roles" {
+  source = "./modules/iam_roles"
+}
+
+#################################
 # 1. Módulo VPC
 #################################
 module "vpc" {
@@ -35,21 +42,13 @@ module "ecs" {
 }
 
 #################################
-# 5. Módulo DOCUMENTDB
+# 5. Módulo sg_group
 #################################
-module "documentdb" {
-  source            = "./modules/documentdb"
-  name              = "${var.project_name}-docdb"
-  vpc_id            = module.vpc.vpc_id
-  public_subnets    = module.vpc.public_subnets
-  ecs_tasks_sg_id   = module.fargate_service.ecs_tasks_sg_id
-  master_username   = "adminuser"
-  master_password   = "AdminPassword123!"  # <--- Ajusta a tu preferencia
-  instance_class    = "db.t4g.medium"
-  # Nota: Debemos definir `ecs_tasks_sg_id` después de crearlo en fargate_service.
-  # Sin embargo, FARGATE_SERVICE depende también del ALB.
-  # Para resolver esta dependencia, haremos un pequeño truco:
-  # Llamamos primero al fargate_service sin docdb config, luego referenciamos.
+module "sg_group" {
+  source        = "./modules/sg_group"
+  vpc_id        = module.vpc.vpc_id
+  project_name  = var.project_name
+  # Este módulo crea un SG llamado "public_sg" o como prefieras
 }
 
 #################################
@@ -58,48 +57,40 @@ module "documentdb" {
 module "fargate_service" {
   source           = "./modules/fargate_service"
   service_name     = "${var.project_name}-service"
-  image_url        = "${module.ecr.repo_url}:latest"    # Ajusta tag si necesitas
+  image_url        = "${module.ecr.repo_url}:latest"
   cluster_id       = module.ecs.ecs_cluster_id
   vpc_id           = module.vpc.vpc_id
   public_subnets   = module.vpc.public_subnets
   alb_arn          = module.alb.alb_arn
   alb_sg_id        = module.alb.alb_sg_id
+
+  # Pasa los roles creados
+  execution_role_arn = module.iam_roles.ecs_task_execution_role_arn
+  task_role_arn      = module.iam_roles.ecs_task_role_arn
+
   container_port   = 8080
   listener_port    = 80
   desired_count    = 1
+
+  # El SG que usará Fargate
   public_sg_id     = module.sg_group.public_sg_id
-  # Optional roles
-  execution_role_arn = "<arn-de-tu-rol-ejecucion>"
-  task_role_arn      = "<arn-de-tu-task-role>"
+
 }
 
 #################################
-# 4. Módulo sg_group
+# 7. Módulo DOCUMENTDB
 #################################
-module "sg_group" {
-  source           = "./modules/sg_group"
-  vpc_id           = module.vpc.vpc_id
-  project_name     = var.project_name
+module "documentdb" {
+  source            = "./modules/documentdb"
+  name              = "${var.project_name}-docdb"
+  vpc_id            = module.vpc.vpc_id
+  public_subnets    = module.vpc.public_subnets
+
+  # En lugar de ecs_tasks_sg_id, usaremos public_sg_id
+  public_sg_id      = module.sg_group.public_sg_id
+
+  master_username   = "adminuser"
+  master_password   = "AdminPassword123!"
+  instance_class    = "db.t4g.medium"
 }
 
-# Ajuste de Dependencias entre Fargate y DocumentDB
-# ======================================================
-# Si tu microservicio debe conectarse a DocumentDB al iniciarse,
-# lo ideal es que DocumentDB esté listo antes. Podrías forzar
-# un "depends_on" en la definición fargate_service si fuera crítico:
-#
-# Ejemplo:
-# resource "aws_ecs_service" "this" ... {
-#    ...
-#    depends_on = [aws_docdb_cluster_instance.primary]
-# }
-#
-# O, de manera más simple en Terraform 1.x, definimos la dependencia
-# en el main:
-#
-# El fargate_service depende de documentdb:
-#
-# Esto evita que Fargate inicie antes de que DocDB esté disponible.
-depends_on = [
-  module.documentdb
-]

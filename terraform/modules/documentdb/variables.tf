@@ -13,11 +13,6 @@ variable "public_subnets" {
   description = "Subnets públicas donde se alojará DocumentDB"
 }
 
-variable "ecs_tasks_sg_id" {
-  type        = string
-  description = "Security Group de las tareas ECS"
-}
-
 variable "master_username" {
   type        = string
   description = "Usuario maestro para DocumentDB"
@@ -35,4 +30,9 @@ variable "instance_class" {
   type        = string
   description = "Clase de instancia para DocumentDB"
   default     = "db.t4g.medium"
+}
+
+variable "public_sg_id" {
+  type        = string
+  description = "ID del Security Group compartido para ECS y DocumentDB"
 }

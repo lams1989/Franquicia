@@ -94,3 +94,4 @@ resource "aws_ecs_service" "this" {
     Name = var.service_name
   }
 }
+

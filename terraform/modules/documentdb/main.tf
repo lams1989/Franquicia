@@ -8,7 +8,7 @@ resource "aws_security_group" "docdb_sg" {
     from_port       = 27017
     to_port         = 27017
     protocol        = "tcp"
-    security_groups = [var.ecs_tasks_sg_id]
+    security_groups = [var.public_sg_id]
   }
 
   egress {
@@ -33,7 +33,8 @@ resource "aws_docdb_cluster" "this" {
   master_username         = var.master_username
   master_password         = var.master_password
   db_subnet_group_name    = aws_docdb_subnet_group.this.name
-  vpc_security_group_ids  = [aws_security_group.docdb_sg.id]
+
+  vpc_security_group_ids  = [var.public_sg_id]
   deletion_protection     = false
   apply_immediately       = true
 
