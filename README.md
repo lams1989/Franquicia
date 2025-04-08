@@ -44,6 +44,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
 1. Obtener todas las franquicias
    curl -X GET "http://localhost:8080/api/franquicias" -H "Content-Type: application/json"
 
+
 2. Obtener una franquicia por ID
    curl -X GET "http://localhost:8080/api/franquicias/franq1" -H "Content-Type: application/json"
    Cuerpo de la solicitud:
@@ -52,6 +53,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
     "id": "franq2",
     "nombre": "Franquicia Nueva"
     }`
+
 
 3. Crear una nueva franquicia
    curl -X POST "http://localhost:8080/api/franquicias" -H "Content-Type: application/json" -d '{"id": "franq2", "nombre": "Franquicia Nueva"}'
@@ -62,6 +64,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    "nombre": "Franquicia Nueva"
    }`
 
+
 4. Sucursales
    curl -X POST "http://localhost:8080/api/franquicias/franq1/sucursales" -H "Content-Type: application/json" -d '{"id": "suc2", "nombre": "Sucursal Secundaria"}'
    Cuerpo de la solicitud:
@@ -71,7 +74,8 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    "nombre": "Sucursal Secundaria"
    }`
 
-5. Actualizar nombre de una sucursal
+ 
+6. Actualizar nombre de una sucursal
    curl -X PUT "http://localhost:8080/api/franquicias/franq1/sucursales/suc2" -H "Content-Type: application/json" -d '{"nombre": "Sucursal Actualizada"}'
 
    Cuerpo de la solicitud:
@@ -79,6 +83,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
  `   {
    "nombre": "Sucursal Actualizada"
    }`
+
 
 6. Agregar producto a una sucursal
    curl -X POST "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos" -H "Content-Type: application/json" -d '{"id": "prod2", "nombre": "Producto B", "stock": 50}'
@@ -91,6 +96,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    "stock": 50
    }`
    
+
 7. Eliminar un producto de una sucursal
    curl -X DELETE "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2"
 
@@ -102,8 +108,10 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    "stock": 50
    }`
 
+
 8. Eliminar un producto de una sucursal
    curl -X DELETE "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2"
+
 
 9. Modificar stock de un producto
    curl -X PATCH "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2/stock" -H "Content-Type: application/json" -d '{"stock": 150}'
@@ -112,6 +120,7 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
   ` {
    "stock": 150
    }`
+
 
 10. Obtener el producto con mayor stock
     curl -X GET "http://localhost:8080/api/franquicias/franq1/productos/mayor-stock"
@@ -127,8 +136,11 @@ En caso de error, el servicio devuelve una estructura JSON con el código de err
     "path": "/api/franquicias/franq999"
     }
 
+
+
 ## Infraestructura con Terraform
-Este archivo describe cómo usar los archivos y módulos de Terraform para crear una infraestructura base que incluye:
+
+Esta sección describe cómo usar los archivos y módulos de Terraform para crear una infraestructura base que incluye:
 
     VPC con subnets públicas
 
