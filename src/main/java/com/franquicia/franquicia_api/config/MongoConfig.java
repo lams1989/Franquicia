@@ -11,13 +11,16 @@ import com.mongodb.reactivestreams.client.MongoClients;
 @Configuration
 public class MongoConfig {
 
+	private static final String FRANQUICIA_DB = "franquicia_db";
+	private static final String MONGODB_LOCALHOST_27017 = "mongodb://localhost:27017";
+
 	@Bean
 	public MongoClient reactiveMongoClient() {
-		return MongoClients.create("mongodb://localhost:27017");
+		return MongoClients.create(MONGODB_LOCALHOST_27017);
 	}
 
 	@Bean
 	public ReactiveMongoTemplate reactiveMongoTemplate(MongoClient mongoClient) {
-		return new ReactiveMongoTemplate(new SimpleReactiveMongoDatabaseFactory(mongoClient, "franquicia_db"));
+		return new ReactiveMongoTemplate(new SimpleReactiveMongoDatabaseFactory(mongoClient, FRANQUICIA_DB));
 	}
 }

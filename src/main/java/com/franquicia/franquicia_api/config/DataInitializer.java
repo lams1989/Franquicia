@@ -17,6 +17,9 @@ import reactor.core.publisher.Mono;
 @Component
 public class DataInitializer {
 
+	private static final String DATABASE_INITIALIZED_SUCCESSFULLY_WITH_DEMO_DATA = "Database initialized successfully with demo data";
+	private static final String ERROR_INITIALIZING_DATABASE = "Error initializing database: ";
+
 	private final FranquiciaRepositorio repositorio;
 
 	public DataInitializer(FranquiciaRepositorio repositorio) {
@@ -27,26 +30,21 @@ public class DataInitializer {
 	public void initDatabase() {
 		Mono<Void> deleteAllMono = repositorio.deleteAll();
 
-		// Verificar si deleteAllMono es null y manejarlo adecuadamente
 		if (deleteAllMono == null) {
 			deleteAllMono = Mono.empty();
 		}
 
 		deleteAllMono.thenMany(Flux.just("Sucursal Principal", "Sucursal Secundaria").map(sucursalNombre -> {
-			// Crear productos para cada sucursal
 			List<Producto> productos = new ArrayList<>();
 			productos.add(new Producto("prod1", "Producto A", 100));
 			productos.add(new Producto("prod2", "Producto B", 50));
 
-			// Crear la sucursal con productos
 			return new Sucursal("suc" + (sucursalNombre.equals("Sucursal Principal") ? "1" : "2"), sucursalNombre,
 					productos);
 		}).collectList().flatMapMany(sucursales -> {
-			// Crear la franquicia con las sucursales
 			Franquicia franquicia = new Franquicia("franq1", "Franquicia Demo", sucursales);
 			return repositorio.save(franquicia).flux();
-		})).doOnComplete(() -> System.out.println("Database initialized successfully with demo data"))
-				.doOnError(error -> System.err.println("Error initializing database: " + error.getMessage()))
-				.subscribe();
+		})).doOnComplete(() -> System.out.println(DATABASE_INITIALIZED_SUCCESSFULLY_WITH_DEMO_DATA))
+				.doOnError(error -> System.err.println(ERROR_INITIALIZING_DATABASE + error.getMessage())).subscribe();
 	}
 }
