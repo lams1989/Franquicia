@@ -48,59 +48,59 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    curl -X GET "http://localhost:8080/api/franquicias/franq1" -H "Content-Type: application/json"
    Cuerpo de la solicitud:
 
-    {
+   ` {
     "id": "franq2",
     "nombre": "Franquicia Nueva"
-    }
+    }`
 
 3. Crear una nueva franquicia
    curl -X POST "http://localhost:8080/api/franquicias" -H "Content-Type: application/json" -d '{"id": "franq2", "nombre": "Franquicia Nueva"}'
    Cuerpo de la solicitud:
 
-   {
+   `{
    "id": "franq2",
    "nombre": "Franquicia Nueva"
-   }
+   }`
 
 4. Sucursales
    curl -X POST "http://localhost:8080/api/franquicias/franq1/sucursales" -H "Content-Type: application/json" -d '{"id": "suc2", "nombre": "Sucursal Secundaria"}'
    Cuerpo de la solicitud:
 
-   {
+ `  {
    "id": "suc2",
    "nombre": "Sucursal Secundaria"
-   }
+   }`
 
 5. Actualizar nombre de una sucursal
    curl -X PUT "http://localhost:8080/api/franquicias/franq1/sucursales/suc2" -H "Content-Type: application/json" -d '{"nombre": "Sucursal Actualizada"}'
 
    Cuerpo de la solicitud:
 
-    {
+ `   {
    "nombre": "Sucursal Actualizada"
-   }
+   }`
 
 6. Agregar producto a una sucursal
    curl -X POST "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos" -H "Content-Type: application/json" -d '{"id": "prod2", "nombre": "Producto B", "stock": 50}'
 
    Cuerpo de la solicitud:
 
-   {
+`   {
    "id": "prod2",
    "nombre": "Producto B",
    "stock": 50
-   }
+   }`
    
 7. Eliminar un producto de una sucursal
    curl -X DELETE "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2"
 
     Cuerpo de la solicitud:
 
-   {
+ `  {
    "id": "prod2",
    "nombre": "Producto B",
    "stock": 50
-   }
+   }`
 
 8. Eliminar un producto de una sucursal
    curl -X DELETE "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2"
@@ -109,9 +109,9 @@ Franquicia API es una aplicación basada en Spring Boot que gestiona la informac
    curl -X PATCH "http://localhost:8080/api/franquicias/franq1/sucursales/suc1/productos/prod2/stock" -H "Content-Type: application/json" -d '{"stock": 150}'
    Cuerpo de la solicitud:
 
-   {
+  ` {
    "stock": 150
-   }
+   }`
 
 10. Obtener el producto con mayor stock
     curl -X GET "http://localhost:8080/api/franquicias/franq1/productos/mayor-stock"
@@ -128,7 +128,7 @@ En caso de error, el servicio devuelve una estructura JSON con el código de err
     }
 
 ## Infraestructura con Terraform
-1. Este archivo describe cómo usar los archivos y módulos de Terraform para crear una infraestructura base que incluye:
+Este archivo describe cómo usar los archivos y módulos de Terraform para crear una infraestructura base que incluye:
 
     VPC con subnets públicas
 
@@ -174,8 +174,9 @@ Estructura de Archivos
      ```
   
   4.  Verificar el Plan
-      ```bash
-     terraform plan
+       ```bash
+      terraform init
+        ```
     
   5. Aplicar Cambios
       ```bash
